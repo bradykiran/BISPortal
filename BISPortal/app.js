@@ -42,7 +42,9 @@ passport.use(new LocalStrategy(function(username, password, done) {
             return done(null, user);
          }
       }
-   });
+   }).otherwise(function (err) {
+        console.log(err.message);
+    });
 }));
 
 passport.serializeUser(function(user, done) {
@@ -52,7 +54,9 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(username, done) {
    new Model.User({username: username}).fetch().then(function(user) {
       done(null, user);
-   });
+   }).otherwise(function (err) {
+        console.log(err.message);
+    });
 });
 
 //app.set('port', process.env.PORT || prop.appPort);
@@ -60,8 +64,19 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(cookieParser());
-app.use(bodyParser());
-app.use(session( { secret: 'all is well', rolling: true , cookie: { maxAge: prop.normalSessionTime }}));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(session( 
+    {
+        secret: 'all is well', 
+        rolling: true , 
+        resave: true,
+        saveUninitialized : true,
+        cookie: { maxAge: prop.normalSessionTime }
+    }));
 app.use(passport.initialize());
 app.use(passport.session());
 

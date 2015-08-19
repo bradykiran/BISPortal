@@ -62,6 +62,8 @@ var home = function(req, res, next) {
                 res.render('home', { title: user.firstname + '\'' + 's' + ' ' + prop.homeTitle, user: user, adminLink: adminLink, adminLinkText: adminLinkText });
             }
 
+        }).otherwise(function (err) {
+            console.log(err.message);
         });    
    }
 };
@@ -237,15 +239,13 @@ var emailPost = function (req, res, next) {
                 util.sendEmail(email, msg);
                    res.render('login', { title: prop.loginTitle });
                  //res.redirect('/login');
-                })
-                .otherwise(function (err) {
+                }).otherwise(function (err) {
                  console.log('Save error');
             console.log(err.message);
             res.render('login', { title: prop.loginTitle });
                // res.redirect('/login');
             });       
-    })
-    .otherwise(function (err) {
+    }).otherwise(function (err) {
         console.log('Fetch error');
         console.log(err.message);
         res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage :prop.invalidEmailMsg });
@@ -320,11 +320,17 @@ var addUser = function (req, res, next) {
                         signUpUser.save().then(function (model) {
                             addUserMessage = prop.addUserScccessMsg;
                             res.redirect('admin?addUserMessage#user');
+                        }).otherwise(function (err) {
+                            console.log(err.message);
                         });
                     }
+                }).otherwise(function (err) {
+                    console.log(err.message);
                 });
 
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });        
     }    
 };
@@ -345,11 +351,15 @@ var removeUser = function (req, res, next) {
                 userRemove.destroy().then(function () {
                     removeUserMessage = prop.removeUserSuccessMsg;
                     res.redirect('admin?removeUserMessage#user');
+                }).otherwise(function (err) {
+                    console.log(err.message);
                 });
             } else {
                 removeUserMessage = prop.removeUserErrMsg;
                 res.redirect('admin?removeUserMessage#user');
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });        
     }    
 };
@@ -385,15 +395,19 @@ var addProject = function (req, res, next) {
                         projAdd.save().then(function (model) {
                             addProjMessage = prop.addProjSuccessMsg;
                             res.redirect('admin?addProjMessage#project');
+                        }).otherwise(function (err) {
+                            console.log(err.message);
                         });
                     }
+                }).otherwise(function (err) {
+                    console.log(err.message);
                 });
 
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });
-        
     }
-    
 };
 
 // admin remove project
@@ -413,11 +427,15 @@ var removeProject = function (req, res, next) {
                 projRemove.destroy().then(function () {
                     removeProjMessage = prop.removeProjSuccessMsg;
                     res.redirect('admin?removeProjMessage#project');
+                }).otherwise(function (err) {
+                    console.log(err.message);
                 });
             } else {
                 removeProjMessage = prop.removeProjErrMsg;
                 res.redirect('admin?removeProjMessage#project');
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });
         
     }
@@ -455,14 +473,20 @@ var assignUserProject = function (req, res, next) {
                                 assignUP.save().then(function (model) {
                                     assignUserProjMessage = prop.upAssignSuccessMsg;
                                     res.redirect('admin?assignUserProjMessage#user-project');
+                                }).otherwise(function (err) {
+                                    console.log(err.message);
                                 });
                             }
+                        }).otherwise(function (err) {
+                            console.log(err.message);
                         });
                    
                     } else {
                         assignUserProjMessage = prop.upAssignProjErrMsg;
                         res.redirect('admin?assignUserProjMessage#user-project');
                     }
+                }).otherwise(function (err) {
+                    console.log(err.message);
                 });
             
             } else {
@@ -470,6 +494,8 @@ var assignUserProject = function (req, res, next) {
                 res.redirect('admin?assignUserProjMessage#user-project');
 
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });
         
     }
@@ -494,11 +520,15 @@ var unassignUserProject = function (req, res, next) {
                 upRemove.destroy().then(function () {
                     unassignUserProjMessage = prop.upUnAssignSuccessMsg;
                     res.redirect('admin?unassignUserProjMessage#user-project');
+                }).otherwise(function (err) {
+                    console.log(err.message);
                 });
             } else {
                 unassignUserProjMessage = prop.upUnAssignErrMsg;
                 res.redirect('admin?unassignUserProjMessage#user-project');
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });
         
     }
@@ -575,6 +605,8 @@ var changePwdPost = function (req, res, next) {
                     });
                 }
             }
+        }).otherwise(function (err) {
+            console.log(err.message);
         });        
     }
     
