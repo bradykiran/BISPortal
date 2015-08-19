@@ -37,6 +37,7 @@
     <Compile Include="utility.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="sql.txt" />
     <Content Include="views\admin.ejs" />
     <Content Include="views\change-pwd.ejs" />
     <Content Include="views\email-pwd.ejs" />
