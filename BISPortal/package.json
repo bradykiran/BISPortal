@@ -19,7 +19,9 @@
     "request": "*",
     "fs": "*",
     "http-post": "*",
-      "nodemailer": "*"
+    "nodemailer": "*",
+    "http-proxy": "*",
+    "express-http-proxy": "*"
     
    }
 }

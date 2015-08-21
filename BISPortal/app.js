@@ -14,7 +14,7 @@ var fs = require('fs');
 var httpPost = require('http-post');
 var nodemailer = require('nodemailer');
 var knex = require('knex');
-
+var httpProxy = require('http-proxy');
 
 
 // custom libraries
@@ -99,6 +99,39 @@ app.get('/login', route.login);
 // POST
 app.post('/login', route.loginPost);
 
+// logout
+// GET
+app.get('/signout', route.signOut);
+app.get('/auth/logout', route.signOut);
+
+
+//skyspark project, get login info
+//GET
+app.get('/project/:id', route.project);
+
+
+//proxy skyspark
+//GET 
+app.get('/proj/*', route.skyspark);
+app.get('/pod/*', route.skyspark);
+app.get('/util/*', route.skyspark);
+app.get('/branding/*', route.skyspark);
+app.get('/doc/*', route.skyspark);
+//post
+app.post('/api/*', route.skyspark);
+
+
+// email password
+// GET
+app.get('/email', route.email);
+// POST
+app.post('/email', route.emailPost);
+
+
+//admin 
+//GET
+app.get('/admin', route.admin);
+
 // add user
 // POST
 app.post('/adduser', route.addUser);
@@ -123,26 +156,7 @@ app.post('/assignuserproject', route.assignUserProject);
 // POST
 app.post('/unassignuserproject', route.unassignUserProject);
 
-// logout
-// GET
-app.get('/signout', route.signOut);
 
-
-//skyspark project
-//GET
-app.get('/project/:id', route.project);
-
-
-// email password
-// GET
-app.get('/email', route.email);
-// POST
-app.post('/email', route.emailPost);
-
-
-//admin 
-//GET
-app.get('/admin', route.admin);
 
 // change password
 // GET

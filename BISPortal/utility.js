@@ -1,6 +1,4 @@
-﻿
-
-var prop = require('./properties');
+﻿var prop = require('./properties');
 var Model = require('./model');
 
 
@@ -258,13 +256,13 @@ var sha1 = function (buf, key) {
 
 //************export utility functions*****************
 
-module.exports = { 
+module.exports = {
     
     // email password
-    emailText :  emailText,
+    emailText : emailText,
     sendEmail : sendEmail,
     randomString : randomString,
-
+    
     
     // skyspark integration
     toBytes : toBytes,
@@ -272,4 +270,3 @@ module.exports = {
     sha1 : sha1
 
 };
- 
