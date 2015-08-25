@@ -1,4 +1,6 @@
-﻿drop database if exists dbUsers;
+﻿//@author Kiran Gaitonde
+
+drop database if exists dbUsers;
 
 create database if not exists dbUsers;
 

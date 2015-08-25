@@ -1,4 +1,6 @@
-﻿var prop = require('./properties');
+﻿//@author Kiran Gaitonde
+
+var prop = require('./properties');
 var Model = require('./model');
 
 

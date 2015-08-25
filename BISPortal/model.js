@@ -1,3 +1,4 @@
+//@author Kiran Gaitonde
 
 // libraries
 var DB = require('./db').DB;

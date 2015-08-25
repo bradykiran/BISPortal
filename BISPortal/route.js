@@ -1,3 +1,5 @@
+//@author Kiran Gaitonde
+
 // npm libraries
 var passport = require('passport');
 var bcrypt = require('bcrypt-nodejs');
