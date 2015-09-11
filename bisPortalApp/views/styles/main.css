@@ -1,3 +1,8 @@
+/* 
+    Created on : Jul 15, 2015, 9:31:11 AM
+    Author     : kgaitonde
+*/
+
 .foot{ 
     background: rgba(1,1,1,0.9);
     color:white;
@@ -32,6 +37,12 @@
     color: black;
 }
 
+.text-brady-blue{
+    color:#4D8EC1;
+}
+
+
+
 .error-message{
     color:red;
 }
@@ -39,3 +50,14 @@
 .color-white{
     color:white;
 }
+
+.link-style a { 
+color:white; 
+text-decoration:none; 
+} 
+
+.link-style a:hover { 
+color:black; 
+text-decoration:none; 
+} 
+
