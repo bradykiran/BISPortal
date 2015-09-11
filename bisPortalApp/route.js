@@ -46,8 +46,7 @@ var home = function (req, res, next) {
                 }
                 res.header("Cache-Control", "no-cache, no-store, must-revalidate");
                 res.header("Pragma", "no-cache");
-                res.header("Expires", 0);
-                res.clearCookie('fanws'); // clear cookie to avoid pressing back button
+                res.header("Expires", 0);                
                 res.render('home', { title: user.firstname + '\'' + 's' + ' ' + prop.homeTitle, user: user, adminLink: adminLink, adminLinkText: adminLinkText, userProjectList: userProjectList });
                 
             
@@ -125,11 +124,9 @@ var signOut = function (req, res, next) {
 
 //skyspark sign out
 var skySignOut = function (req, res, next) {
-    if (!req.isAuthenticated()) {
-        res.redirect('/login');
-    } else {       
+        res.clearCookie('fanws'); // clear cookie to avoid pressing back button  
         res.redirect('/home');
-    }
+    
 };
 
 // project redirect to skyspark
