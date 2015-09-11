@@ -15,7 +15,6 @@ var http = require('http');
 var fs = require('fs');
 var httpPost = require('http-post');
 var nodemailer = require('nodemailer');
-var knex = require('knex');
 var httpProxy = require('http-proxy');
 
 
@@ -73,7 +72,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(session( 
     {
-        secret: 'all is well', 
+        secret: prop.sessionSecret, 
         rolling: true , 
         resave: true,
         saveUninitialized : true,
@@ -104,8 +103,10 @@ app.post('/login', route.loginPost);
 // logout
 // GET
 app.get('/signout', route.signOut);
-app.get('/auth/logout', route.signOut);
 
+//skyspark logout
+app.get('/auth/logout', route.skySignOut);
+app.get('/auth/demo/login', route.skySignOut);
 
 //skyspark project, get login info
 //GET

@@ -38,6 +38,8 @@ var randomPwdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV
 var adminLink = 'admin';
 var adminLinkText = 'Admin Console';
 
+//session
+var sessionSecret = 'all is well';
 
 // session time details
 var normalSessionTime = 30000; // 30 secs
@@ -120,6 +122,9 @@ module.exports = {
     // admin link details
     adminLink : adminLink,
     adminLinkText : adminLinkText,   
+    
+    //
+    sessionSecret: sessionSecret,
 
     // session time details
     normalSessionTime : normalSessionTime,
