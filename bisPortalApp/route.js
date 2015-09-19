@@ -241,38 +241,104 @@ var emailPost = function (req, res, next) {
     
     var reqBody = req.body;
     var email = reqBody.email;
+    var username = reqBody.username;
     var forgotPwdMessage = '';
     
     // generate password and hash it
     var randomPwd = util.randomString(10);
     var hash = bcrypt.hashSync(randomPwd);
     
-    
-    // update password in DB 
-    new Model.User({ emailId: email })
+    // blank username and password
+    if (username == "" && email == "") {
+        forgotPwdMessage = prop.blankUnameEmail;
+        res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.blankUnameEmail });
+
+    }
+    // username and blank email
+    if (username != "" && email == "") {
+        //update password in DB
+        new Model.User({ username: username })
         .fetch({ require: true })
         .then(function (model) {
-        model.save({ password: hash }, { patch: true })
+            model.save({ password: hash }, { patch: true })
                 .then(function () {
-            var name = model.get('firstname');
-            var msg = util.emailText(randomPwd, name);
-            util.sendEmail(email, msg);
-            res.render('login', { title: prop.loginTitle });
+                var name = model.get('firstname');
+                var msg = util.emailText(randomPwd, name);
+                util.sendEmail(model.get('emailId'),msg);
+                res.render('login', { title: prop.loginTitle });
                  //res.redirect('/login');
-        }).otherwise(function (err) {
-            console.log('Save error');
-            console.log(err.message);
-            res.render('login', { title: prop.loginTitle });
+            }).otherwise(function (err) {
+                console.log('Save error');
+                console.log(err.message);
+                res.render('login', { title: prop.loginTitle });
                // res.redirect('/login');
-        });
-    }).otherwise(function (err) {
-        console.log('Fetch error');
-        console.log(err.message);
-        res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.invalidEmailMsg });
+            });
+        }).otherwise(function (err) {
+            console.log('Fetch error');
+            console.log(err.message);
+            res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.invalidUnamelMsg });
         //res.redirect('/login');
-    });
+        });
  
+
+    }
+    //blank username and email
+    if (username == "" && email != "") {
+        // update password in DB 
+        new Model.User({ emailId: email })
+        .fetch({ require: true })
+        .then(function (model) {
+            model.save({ password: hash }, { patch: true })
+                .then(function () {
+                var name = model.get('firstname');
+                var msg = util.emailText(randomPwd, name);
+                util.sendEmail(model.get('emailId'), msg);
+                res.render('login', { title: prop.loginTitle });
+                 //res.redirect('/login');
+            }).otherwise(function (err) {
+                console.log('Save error');
+                console.log(err.message);
+                res.render('login', { title: prop.loginTitle });
+               // res.redirect('/login');
+            });
+        }).otherwise(function (err) {
+            console.log('Fetch error');
+            console.log(err.message);
+            res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.invalidEmailMsg });
+        //res.redirect('/login');
+        });
+
+    }
+    // username and email
+    if (username != "" && email != "") {
+        // update password in DB 
+        new Model.User({ emailId: email, username : username})
+        .fetch({ require: true })
+        .then(function (model) {
+            model.save({ password: hash }, { patch: true })
+                .then(function () {
+                var name = model.get('firstname');
+                var msg = util.emailText(randomPwd, name);
+                util.sendEmail(model.get('emailId'), msg);
+                res.render('login', { title: prop.loginTitle });
+                 //res.redirect('/login');
+            }).otherwise(function (err) {
+                console.log('Save error');
+                console.log(err.message);
+                res.render('login', { title: prop.loginTitle });
+               // res.redirect('/login');
+            });
+        }).otherwise(function (err) {
+            console.log('Fetch error');
+            console.log(err.message);
+            res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.usernameEmailMismatch });
+        //res.redirect('/login');
+        });
+
+    }    
 };
+
+
 
 
 // admin page

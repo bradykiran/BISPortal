@@ -71,6 +71,9 @@ var changePwdSuccessMsg = 'Password changed sucessfully';
 var unexpectedError = 'Unexpected Error';
 var invalidUserMsg = 'Invalid Username or Password';
 var invalidEmailMsg = 'Email ID not registerd';
+var invalidUnamelMsg = 'Username not found';
+var usernameEmailMismatch = 'Username and Email-Id did not match';
+var blankUnameEmail = 'Enter either Username or Email Id or both';
 var adminErrMsg = 'You do not have admin rights!';
 var addUserEmailErrMsg = 'Email Id already exists';
 var addUserUnameErrMsg = 'Username already exists';
@@ -154,6 +157,9 @@ module.exports = {
     unexpectedError: unexpectedError,
     invalidUserMsg: invalidUserMsg,
     invalidEmailMsg: invalidEmailMsg,
+    invalidUnamelMsg: invalidUnamelMsg,
+    usernameEmailMismatch: usernameEmailMismatch,
+    blankUnameEmail: blankUnameEmail,
     adminErrMsg: adminErrMsg,    
     addUserEmailErrMsg : addUserEmailErrMsg,
     addUserUnameErrMsg : addUserUnameErrMsg,  
