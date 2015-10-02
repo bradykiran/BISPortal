@@ -1,4 +1,11 @@
 //@author Kiran Gaitonde
+/* 
+References: 
+ * http://expressjs.com/4x/api.html 
+ * http://bookshelfjs.org/
+ * http://yifeed.com/passportjs-mysql-expressjs-authentication.html 
+*/
+
 
 // npm libraries
 var express = require('express');
@@ -16,6 +23,7 @@ var fs = require('fs');
 var httpPost = require('http-post');
 var nodemailer = require('nodemailer');
 var httpProxy = require('http-proxy');
+var maintenance = require('maintenance');
 
 
 // custom libraries
@@ -28,7 +36,12 @@ var prop = require('./properties');
 
 /********************************/
 
+var config = {
+    maintenance: true
+};
+
 var app = express();
+maintenance(app, config.maintenance);
 
 passport.use(new LocalStrategy(function(username, password, done) {
    new Model.User({username: username}).fetch().then(function(data) {
@@ -170,6 +183,11 @@ app.post('/changePwd', route.changePwdPost);
 
 // 404 not found
 app.use(route.notFound404);
+
+
+// maintenance
+// GET
+app.get('/maintenance', route.maintenance);
 
 
 

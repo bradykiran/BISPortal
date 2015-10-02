@@ -5,6 +5,9 @@
 
 var appPort = 3000;
 
+// put website under maintenance
+var maintenanceStat = true;
+
 // Sky Spark Server
 var skySparkServer = 'http://localhost';
 
@@ -24,7 +27,7 @@ var dbUserProjTable = 'userproject';
 var dbUserProjTableId = 'upId';
 
 
-//email forgot password details
+//email, forgot password, details
 var host = '52.2.247.109';
 var emailAddress = 'rikkitikkitavi@bis.bradyservices.com';        
 var emailPassword = 'brady1915';
@@ -55,6 +58,7 @@ var forgotPwdTitle = 'Forgot Password';
 var adminTitle = 'Admin Console';
 var pnfTitle = 'Page not Found';
 var changePwdTitle = 'Change Password';
+var underMaintenence = 'Site Under Maintenence';
 
 
 //Success messages
@@ -94,6 +98,9 @@ module.exports = {
     
     //app port
     appPort : appPort,
+    
+    // put website under maintenance
+    maintenanceStat: maintenanceStat,
     
     // skysparkserver
     skySparkServer : skySparkServer,

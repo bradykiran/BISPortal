@@ -34,6 +34,7 @@
     <Compile Include="bin\www" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="views\maintenance.ejs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
