@@ -1,12 +1,5 @@
 //@author Kiran Gaitonde
 
-/* 
-References: 
- * http://expressjs.com/4x/api.html 
- * http://bookshelfjs.org/
- * http://yifeed.com/passportjs-mysql-expressjs-authentication.html 
-*/
-
 // npm libraries
 var passport = require('passport');
 var bcrypt = require('bcrypt-nodejs');
@@ -19,18 +12,14 @@ var prop = require('./properties');
 var util = require('./utility');
 
 //proxy server for skyspark
-var skyproxy = httpProxy.createProxyServer();
+var skyproxy = httpProxy.createProxyServer();  
 
 // ********* Routes***********//
 
 
 // index page
-var index = function (req, res, next) {
-    if (prop.maintenanceStat) {
-        res.redirect('/maintenance');
-    } else {
-        res.render('index', { title: prop.indexTitle });    
-    }        
+var index = function (req, res, next) {    
+    res.render('index', { title: prop.indexTitle });
 };
 
 // home page
@@ -57,7 +46,7 @@ var home = function (req, res, next) {
                 }
                 res.header("Cache-Control", "no-cache, no-store, must-revalidate");
                 res.header("Pragma", "no-cache");
-                res.header("Expires", 0);
+                res.header("Expires", 0);                
                 res.render('home', { title: user.firstname + '\'' + 's' + ' ' + prop.homeTitle, user: user, adminLink: adminLink, adminLinkText: adminLinkText, userProjectList: userProjectList });
                 
             
@@ -135,8 +124,8 @@ var signOut = function (req, res, next) {
 
 //skyspark sign out
 var skySignOut = function (req, res, next) {
-    res.clearCookie('fanws'); // clear cookie to avoid pressing back button  
-    res.redirect('/home');
+        res.clearCookie('fanws'); // clear cookie to avoid pressing back button  
+        res.redirect('/home');
     
 };
 
@@ -221,7 +210,7 @@ var project = function (req, res, next) {
                     var x = resp.headers["set-cookie"].toString();
                     var separators = ['=', ';', '\"', ' '];
                     var tokens = x.split(new RegExp(separators.join('|'), 'g'));
-                    res.cookie('fanws', tokens[2]);
+                    res.cookie('fanws', tokens[2]);                   
                     res.redirect('/proj/' + projurl);
                 });
             }
@@ -234,7 +223,7 @@ var project = function (req, res, next) {
 var skyspark = function (req, res, next) {
     res.header("Cache-Control", "no-cache, no-store, must-revalidate");
     res.header("Pragma", "no-cache");
-    res.header("Expires", 0);
+    res.header("Expires", 0); 
     skyproxy.web(req, res, { target: prop.skySparkServer });
 };
 
@@ -275,7 +264,7 @@ var emailPost = function (req, res, next) {
                 .then(function () {
                 var name = model.get('firstname');
                 var msg = util.emailText(randomPwd, name);
-                util.sendEmail(model.get('emailId'), msg);
+                util.sendEmail(model.get('emailId'),msg);
                 res.render('login', { title: prop.loginTitle });
                  //res.redirect('/login');
             }).otherwise(function (err) {
@@ -323,7 +312,7 @@ var emailPost = function (req, res, next) {
     // username and email
     if (username != "" && email != "") {
         // update password in DB 
-        new Model.User({ emailId: email, username : username })
+        new Model.User({ emailId: email, username : username})
         .fetch({ require: true })
         .then(function (model) {
             model.save({ password: hash }, { patch: true })
@@ -346,7 +335,7 @@ var emailPost = function (req, res, next) {
         //res.redirect('/login');
         });
 
-    }
+    }    
 };
 
 
@@ -711,19 +700,17 @@ var changePwdPost = function (req, res, next) {
 
 
 
-
 // 404 not found
 var notFound404 = function (req, res, next) {
     res.status(404);
     res.render('404', { title: prop.pnfTitle });
 };
 
-// under maintenance
-var maintenance = function (req, res, next) {   
-    res.render('maintenance', { title: prop.underMaintenence});
+
+// maintenance
+var maintenance = function (req, res, next) {
+    res.render('maintenance', { title: prop.maintenanceTitle });
 };
-
-
 
 
 
@@ -795,5 +782,5 @@ module.exports.changePwdPost = changePwdPost;
 // 404 not found
 module.exports.notFound404 = notFound404;
 
-// under maintenance
+// maintenance
 module.exports.maintenance = maintenance;

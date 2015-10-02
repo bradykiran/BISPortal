@@ -1,11 +1,4 @@
 //@author Kiran Gaitonde
-/* 
-References: 
- * http://expressjs.com/4x/api.html 
- * http://bookshelfjs.org/
- * http://yifeed.com/passportjs-mysql-expressjs-authentication.html 
-*/
-
 
 // npm libraries
 var express = require('express');
@@ -23,7 +16,6 @@ var fs = require('fs');
 var httpPost = require('http-post');
 var nodemailer = require('nodemailer');
 var httpProxy = require('http-proxy');
-var maintenance = require('maintenance');
 
 
 // custom libraries
@@ -36,12 +28,7 @@ var prop = require('./properties');
 
 /********************************/
 
-var config = {
-    maintenance: true
-};
-
 var app = express();
-maintenance(app, config.maintenance);
 
 passport.use(new LocalStrategy(function(username, password, done) {
    new Model.User({username: username}).fetch().then(function(data) {
@@ -99,97 +86,97 @@ app.use(express.static(__dirname + '/views'));
 
 /********************************/
 
-//index
-// GET
-app.get('/', route.index);
+if (prop.maintenanceStat) {
+    //maintenance
+    // GET
+    app.get('/*', route.maintenance);
+} else {
+    //index
+    // GET
+    app.get('/', route.index);
+    
+    //home
+    // GET
+    app.get('/home', route.home);
+    
+    // login
+    // GET
+    app.get('/login', route.login);
+    // POST
+    app.post('/login', route.loginPost);
+    
+    // logout
+    // GET
+    app.get('/signout', route.signOut);
+    
+    //skyspark logout
+    app.get('/auth/logout', route.skySignOut);
+    app.get('/auth/demo/login', route.skySignOut);
+    
+    //skyspark project, get login info
+    //GET
+    app.get('/project/:id', route.project);
+    
+    
+    //proxy skyspark
+    //GET 
+    app.get('/proj/*', route.skyspark);
+    app.get('/pod/*', route.skyspark);
+    app.get('/util/*', route.skyspark);
+    app.get('/branding/*', route.skyspark);
+    app.get('/doc/*', route.skyspark);
+    //post
+    app.post('/api/*', route.skyspark);
+    
+    
+    // email password
+    // GET
+    app.get('/email', route.email);
+    // POST
+    app.post('/email', route.emailPost);
+    
+    
+    //admin 
+    //GET
+    app.get('/admin', route.admin);
+    
+    // add user
+    // POST
+    app.post('/adduser', route.addUser);
+    
+    // remove user
+    // POST
+    app.post('/removeuser', route.removeUser);
+    
+    // add project
+    // POST
+    app.post('/addproject', route.addProject);
+    
+    // remove project
+    // POST
+    app.post('/removeproject', route.removeProject);
+    
+    // assign user project
+    // POST
+    app.post('/assignuserproject', route.assignUserProject);
+    
+    // unassign user project
+    // POST
+    app.post('/unassignuserproject', route.unassignUserProject);
+    
+    
+    
+    // change password
+    // GET
+    app.get('/changePwd', route.changePwd);
+    // POST
+    app.post('/changePwd', route.changePwdPost);
+    
+    
+    // 404 not found
+    app.use(route.notFound404);
 
-//home
-// GET
-app.get('/home', route.home);
-
-// login
-// GET
-app.get('/login', route.login);
-// POST
-app.post('/login', route.loginPost);
-
-// logout
-// GET
-app.get('/signout', route.signOut);
-
-//skyspark logout
-app.get('/auth/logout', route.skySignOut);
-app.get('/auth/demo/login', route.skySignOut);
-
-//skyspark project, get login info
-//GET
-app.get('/project/:id', route.project);
-
-
-//proxy skyspark
-//GET 
-app.get('/proj/*', route.skyspark);
-app.get('/pod/*', route.skyspark);
-app.get('/util/*', route.skyspark);
-app.get('/branding/*', route.skyspark);
-app.get('/doc/*', route.skyspark);
-//post
-app.post('/api/*', route.skyspark);
-
-
-// email password
-// GET
-app.get('/email', route.email);
-// POST
-app.post('/email', route.emailPost);
-
-
-//admin 
-//GET
-app.get('/admin', route.admin);
-
-// add user
-// POST
-app.post('/adduser', route.addUser);
-
-// remove user
-// POST
-app.post('/removeuser', route.removeUser);
-
-// add project
-// POST
-app.post('/addproject', route.addProject);
-
-// remove project
-// POST
-app.post('/removeproject', route.removeProject);
-
-// assign user project
-// POST
-app.post('/assignuserproject', route.assignUserProject);
-
-// unassign user project
-// POST
-app.post('/unassignuserproject', route.unassignUserProject);
-
-
-
-// change password
-// GET
-app.get('/changePwd', route.changePwd);
-// POST
-app.post('/changePwd', route.changePwdPost);
-
-
-// 404 not found
-app.use(route.notFound404);
-
-
-// maintenance
-// GET
-app.get('/maintenance', route.maintenance);
-
-
+}
 
 /********************************/
 
