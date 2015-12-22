@@ -19,7 +19,42 @@ var skyproxy = httpProxy.createProxyServer();
 
 // index page
 var index = function (req, res, next) {
-    res.render('index', { title: prop.indexTitle });
+    
+    var number = parseInt(Math.random() * 9000 + 1000);    
+    var captchaCode = new Buffer(util.getCaptcha(number)).toString('base64');       
+    req.session.capchaVal = number;
+    res.render('index', { title: prop.indexTitle, captchaCode: captchaCode});
+};
+
+// contact form
+var contact = function (req, res, next) {   
+    if (req.session.capchaVal == req.body.captchaEntered) {
+        //send email to us        
+        var msg = util.emailTextContact(req.body.name, req.body.company, req.body.email, req.body.phone, req.body.message);
+        util.sendEmail(prop.contactEmail, msg, prop.emailSubjectContact);
+        
+         //send mail to sender
+        var msg = util.emailTextContactSender(req.body.name);
+        util.sendEmail(req.body.email, msg, prop.emailSubjectContactSender);       
+        
+
+        
+        //generate new captcha and render the index page
+        var number = parseInt(Math.random() * 9000 + 1000);
+        var captchaCode = new Buffer(util.getCaptcha(number)).toString('base64');
+        req.session.capchaVal = number;
+        
+        //res.redirect('index?contactSuccessMessage#contact');
+        res.render('index', { title: prop.indexTitle, captchaCode: captchaCode, contactFormMessage: prop.contactFormSuccess });
+
+    } else {
+        //generate new captcha and render the index page
+        var number = parseInt(Math.random() * 9000 + 1000);
+        var captchaCode = new Buffer(util.getCaptcha(number)).toString('base64');
+        req.session.capchaVal = number;
+        res.render('index', { title: prop.indexTitle, captchaCode: captchaCode, contactFormMessage: prop.captchaError });
+    }
+
 };
 
 // home page
@@ -46,7 +81,7 @@ var home = function (req, res, next) {
                 }
                 res.header("Cache-Control", "no-cache, no-store, must-revalidate");
                 res.header("Pragma", "no-cache");
-                res.header("Expires", 0);
+                res.header("Expires", 0);                
                 res.render('home', { title: user.firstname + '\'' + 's' + ' ' + prop.homeTitle, user: user, adminLink: adminLink, adminLinkText: adminLinkText, userProjectList: userProjectList });
                 
             
@@ -74,7 +109,7 @@ var home = function (req, res, next) {
 
 // login
 // GET
-var login = function (req, res, next) {
+var login = function (req, res, next) {    
     if (req.isAuthenticated()) res.redirect('/home');
     res.render('login', { title: prop.loginTitle });
 };
@@ -120,6 +155,13 @@ var signOut = function (req, res, next) {
         req.logout();
         res.redirect('/');
     }
+};
+
+//skyspark sign out
+var skySignOut = function (req, res, next) {
+        res.clearCookie('fanws'); // clear cookie to avoid pressing back button  
+        res.redirect('/home');
+    
 };
 
 // project redirect to skyspark
@@ -213,7 +255,10 @@ var project = function (req, res, next) {
 
 
 // proxy skyspark
-var skyspark = function (req, res, next) {   
+var skyspark = function (req, res, next) {
+    res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.header("Pragma", "no-cache");
+    res.header("Expires", 0); 
     skyproxy.web(req, res, { target: prop.skySparkServer });
 };
 
@@ -231,43 +276,109 @@ var emailPost = function (req, res, next) {
     
     var reqBody = req.body;
     var email = reqBody.email;
+    var username = reqBody.username;
     var forgotPwdMessage = '';
     
     // generate password and hash it
     var randomPwd = util.randomString(10);
     var hash = bcrypt.hashSync(randomPwd);
     
-    
-    // update password in DB 
-    new Model.User({ emailId: email })
+    // blank username and password
+    if (username == "" && email == "") {
+        forgotPwdMessage = prop.blankUnameEmail;
+        res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.blankUnameEmail });
+
+    }
+    // username and blank email
+    if (username != "" && email == "") {
+        //update password in DB
+        new Model.User({ username: username })
         .fetch({ require: true })
         .then(function (model) {
-        model.save({ password: hash }, { patch: true })
+            model.save({ password: hash }, { patch: true })
                 .then(function () {
-            var name = model.get('firstname');
-            var msg = util.emailText(randomPwd, name);
-            util.sendEmail(email, msg);
-            res.render('login', { title: prop.loginTitle });
+                var name = model.get('firstname');
+                var msg = util.emailText(randomPwd, name);
+                util.sendEmail(model.get('emailId'),msg, prop.emailSubjectPassword);
+                res.render('login', { title: prop.loginTitle , loginErrorMessage : prop.newPasswordSent });
                  //res.redirect('/login');
-        }).otherwise(function (err) {
-            console.log('Save error');
-            console.log(err.message);
-            res.render('login', { title: prop.loginTitle });
+            }).otherwise(function (err) {
+                console.log('Save error');
+                console.log(err.message);
+                res.render('login', { title: prop.loginTitle });
                // res.redirect('/login');
-        });
-    }).otherwise(function (err) {
-        console.log('Fetch error');
-        console.log(err.message);
-        res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.invalidEmailMsg });
+            });
+        }).otherwise(function (err) {
+            console.log('Fetch error');
+            console.log(err.message);
+            res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.invalidUnamelMsg });
         //res.redirect('/login');
-    });
+        });
  
+
+    }
+    //blank username and email
+    if (username == "" && email != "") {
+        // update password in DB 
+        new Model.User({ emailId: email })
+        .fetch({ require: true })
+        .then(function (model) {
+            model.save({ password: hash }, { patch: true })
+                .then(function () {
+                var name = model.get('firstname');
+                var msg = util.emailText(randomPwd, name);
+                util.sendEmail(model.get('emailId'), msg);
+                res.render('login', { title: prop.loginTitle, loginErrorMessage : prop.newPasswordSent });
+                 //res.redirect('/login');
+            }).otherwise(function (err) {
+                console.log('Save error');
+                console.log(err.message);
+                res.render('login', { title: prop.loginTitle});
+               // res.redirect('/login');
+            });
+        }).otherwise(function (err) {
+            console.log('Fetch error');
+            console.log(err.message);
+            res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.invalidEmailMsg });
+        //res.redirect('/login');
+        });
+
+    }
+    // username and email
+    if (username != "" && email != "") {
+        // update password in DB 
+        new Model.User({ emailId: email, username : username})
+        .fetch({ require: true })
+        .then(function (model) {
+            model.save({ password: hash }, { patch: true })
+                .then(function () {
+                var name = model.get('firstname');
+                var msg = util.emailText(randomPwd, name);
+                util.sendEmail(model.get('emailId'), msg);
+                res.render('login', { title: prop.loginTitle, loginErrorMessage : prop.newPasswordSent });
+                 //res.redirect('/login');
+            }).otherwise(function (err) {
+                console.log('Save error');
+                console.log(err.message);
+                res.render('login', { title: prop.loginTitle});
+               // res.redirect('/login');
+            });
+        }).otherwise(function (err) {
+            console.log('Fetch error');
+            console.log(err.message);
+            res.render('email-pwd', { title: prop.forgotPwdTitle, forgotPwdMessage : prop.usernameEmailMismatch });
+        //res.redirect('/login');
+        });
+
+    }    
 };
+
+
 
 
 // admin page
 //GET
-
+/*
 var admin = function (req, res, next) {
     if (!req.isAuthenticated()) {
         res.redirect('/login');
@@ -288,6 +399,126 @@ var admin = function (req, res, next) {
         }
     }
 };
+
+ */
+
+// to test interactive admin
+var admin = function (req, res, next) {
+    //var assignUP = require("./assignUP");
+   // var abc  = assignUP.dbAssignUserProject("test","Demo Project");
+    //console.log(abc);
+
+
+    if (!req.isAuthenticated()) {
+        res.redirect('/login');
+    } else {
+        var user = req.user;
+        if (user !== undefined) {
+            user = user.toJSON();
+        }
+        
+        var selectedUser = req.query.selectedUser;
+        var selectedProject = req.query.selectedProject;
+        
+        if (user.role == 'admin') {
+            var usersList = null;
+            usersList = new Model.Users().fetch();
+            
+            return usersList.then(function (userCollection) {
+                if (userCollection) {
+                    //fetch users
+                    var uList = userCollection.toJSON();
+                    var projectList = null;
+                    projectList = new Model.Projects().fetch();
+                    
+                    projectList.then(function (projectCollection) {
+                        if (projectCollection) {
+                            //fetch projects        
+                            var pList = projectCollection.toJSON();
+                            var upList = null;
+                            var puList = null
+                            /////////////////
+                            
+                            if (selectedUser != null) { // if some user is selected in admin
+                                var userProjectList = null;
+                                userProjectList = new Model.UserProjects().query({ where: { username: selectedUser } }).fetch();
+                                
+                                return userProjectList.then(function (upCollection) {
+                                    if (upCollection) {
+                                        // fetch user project
+                                        upList = upCollection.toJSON();     // projects assigned to the user          
+                                        //////////////////
+                                        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+                                        res.header("Pragma", "no-cache");
+                                        res.header("Expires", 0);
+                                        res.render('admin2', { title: prop.adminTitle, user: user, uList: uList, pList: pList, upList: upList, puList: puList, selectedUser: selectedUser, selectedProject: selectedProject });
+            
+                                    } else { 
+                                    // no projects assigned to the user                                 
+                                    }
+
+                                }).otherwise(function (err) {
+                                    //user project fetch error
+                                    console.log(err.message);
+                                });
+
+                            } else if (selectedProject != null) {
+                                var projectUserList = null;
+                                projectUserList = new Model.UserProjects().query({ where: { projectname: selectedProject } }).fetch();
+                                
+                                return projectUserList.then(function (puCollection) {
+                                    if (puCollection) {
+                                        // fetch project users
+                                        puList = puCollection.toJSON();     // projects assigned to the user          
+                                        //////////////////
+                                        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+                                        res.header("Pragma", "no-cache");
+                                        res.header("Expires", 0);
+                                        res.render('admin2', { title: prop.adminTitle, user: user, uList: uList, pList: pList, upList: upList, puList: puList, selectedUser: selectedUser, selectedProject: selectedProject });
+            
+                                    } else { 
+                                    // no users assigned to the project                                 
+                                    }
+
+                                }).otherwise(function (err) {
+                                    //user project fetch error
+                                    console.log(err.message);
+                                });
+
+                            } else {
+                                //////////////////
+                                res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+                                res.header("Pragma", "no-cache");
+                                res.header("Expires", 0);
+                                res.render('admin2', { title: prop.adminTitle, user: user, uList: uList, pList: pList, upList: upList, puList: puList, selectedUser: selectedUser, selectedProject: selectedProject });
+                            }       
+                            
+                        }
+                        else {
+                           //no projects obtained
+                        }
+                    }).otherwise(function (err) {
+                        //project fetch error
+                        console.log(err.message);
+                    });
+                }
+                else {
+                //no users obtained
+                }
+            }).otherwise(function (err) {
+                //user fetch error
+                console.log(err.message);
+            });            
+        } else {
+            req.logout();
+            res.render('login', { title: prop.loginTitle, loginErrorMessage: prop.adminErrMsg });
+        }
+    }
+};
+
+
+// to test interactive admin
+
 
 // for adding user first time use this and comment above route
 /*
@@ -624,13 +855,17 @@ var changePwdPost = function (req, res, next) {
 
 
 
-
 // 404 not found
 var notFound404 = function (req, res, next) {
     res.status(404);
     res.render('404', { title: prop.pnfTitle });
 };
 
+
+// maintenance
+var maintenance = function (req, res, next) {
+    res.render('maintenance', { title: prop.maintenanceTitle });
+};
 
 
 
@@ -639,6 +874,9 @@ var notFound404 = function (req, res, next) {
 
 // index
 module.exports.index = index;
+
+// contact
+module.exports.contact = contact;
 
 // home
 module.exports.home = home;
@@ -651,6 +889,9 @@ module.exports.loginPost = loginPost;
 
 // sign out
 module.exports.signOut = signOut;
+
+// skyspark sign out
+module.exports.skySignOut = skySignOut;
 
 // skyspark project
 module.exports.project = project;
@@ -698,3 +939,6 @@ module.exports.changePwdPost = changePwdPost;
 
 // 404 not found
 module.exports.notFound404 = notFound404;
+
+// maintenance
+module.exports.maintenance = maintenance;

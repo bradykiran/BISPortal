@@ -2,6 +2,7 @@
 
 var prop = require('./properties');
 var Model = require('./model');
+var captchapng = require('captchapng');
 
 
 //************ Utility JS Functions ******************************//
@@ -26,22 +27,63 @@ var emailText = function (pwd, name) {
 
 
 
+var emailTextContactSender = function (name) {
+    var msg = '';
+    msg += '<b>Hi' + ' ' + name + '</b>';
+    msg += '<br> <br>';
+    msg += '<p> Thank you for contacting Brady Intelligent Services. <br>';    
+    msg += 'We will get back to you soon!.<br><br>'
+    msg += 'Brady Intelligent Services Team </p>';    
+    return msg;
+};
+
+
+var emailTextContact = function (name, company, email, phone, msgTxt) {
+    var msg = '';
+    msg += '<b>New message sent from contact form</b>';
+    msg += '<br> <br>';
+    msg += '<p> Name:'+name+ '<br>'    ;
+    msg += '<p> Company:'+company+ '<br>'    ;
+    msg += '<p> Email:' + email + '<br>';
+    msg += '<p> Contact#:' + phone + '<br>';
+    msg += '<p> Message Text:' + msgTxt + '<br>';
+    return msg;
+};
+
+//parseInt(Math.random() * 9000 + 1000)
+
+var getCaptcha = function (number) {
+    var p = new captchapng(80, 30, number); // width,height,numeric captcha
+    p.color(115, 95, 197, 100);  // First color: background (red, green, blue, alpha)
+    p.color(30, 104, 21, 255); // Second color: paint (red, green, blue, alpha)
+    var img = p.getBase64();
+    var imgbase64 = new Buffer(img, 'base64');
+    return imgbase64;
+} 
+
 //send email (nodemailer)
-var sendEmail = function (email, msg) {
+var sendEmail = function (toEmail, msg, subject) {
     var nodemailer = require('nodemailer');
-    var transporter = nodemailer.createTransport({
+    var transporter = nodemailer.createTransport( {
+        service: prop.emailService,  
+        auth: {
+            user: prop.emailAddress,
+            pass: prop.emailPassword
+        }
+        
+        /*
         host: prop.host, 
         secureConnection: prop.ssl, 
         port: prop.port,
         auth: {
             user: prop.emailAddress,
             pass: prop.emailPassword
-        }
+        }*/
     });
     transporter.sendMail({
-        from: prop.emailAddress,
-        to: email,
-        subject: prop.emailSubject,
+        from: 'BIS',
+        to: toEmail,
+        subject: subject,
         html: msg
     });
 };
@@ -265,6 +307,14 @@ module.exports = {
     sendEmail : sendEmail,
     randomString : randomString,
     
+    //captcha
+    getCaptcha: getCaptcha,
+    
+    //contact
+    emailTextContact: emailTextContact,
+    emailTextContactSender: emailTextContactSender,
+    
+  
     
     // skyspark integration
     toBytes : toBytes,

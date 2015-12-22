@@ -28,6 +28,14 @@ var UserProjects = DB.Collection.extend({
     model: UserProject
 });
 
+var Users = DB.Collection.extend({
+    model: User
+});
+
+var Projects = DB.Collection.extend({
+    model: Project
+});
+
 
 // export models
 
@@ -35,5 +43,7 @@ module.exports = {
     User: User,
     Project: Project,
     UserProject: UserProject,
-    UserProjects: UserProjects
+    UserProjects: UserProjects,
+    Users: Users,
+    Projects: Projects
 };

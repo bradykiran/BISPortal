@@ -1,27 +1,29 @@
 {
-   "name": "BISPortal",
-   "description": "Brady Intelligent services Portal",
-   "version": "1.0.0",
-   "author": "",
-   "main": "app.js",
-   "dependencies": {
-      "express": "*",
-      "body-parser": "*",
-      "cookie-parser": "*",
-      "express-session": "*",
-      "bcrypt-nodejs": "*",
-      "ejs": "*",
-      "passport": "*",
-      "passport-local": "*",
-    "mysql": "*",
-    "knex": "*",
+  "name": "BISPortal",
+  "description": "Brady Intelligent services Portal",
+  "version": "1.0.0",
+  "author": "",
+  "main": "app.js",
+  "dependencies": {
+    "bcrypt-nodejs": "*",
+    "body-parser": "*",
     "bookshelf": "*",
-    "request": "*",
+    "browserify": "*",
+    "cookie-parser": "*",
+    "dragula": "*",
+    "ejs": "*",
+    "express": "*",
+    "express-http-proxy": "*",
+    "express-session": "*",
     "fs": "*",
     "http-post": "*",
-    "nodemailer": "*",
     "http-proxy": "*",
-    "express-http-proxy": "*"
-    
-   }
+    "knex": "^0.8.6",
+    "mysql": "^2.9.0",
+    "nodemailer": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "request": "*",
+    "captchapng": "*"
+  }
 }

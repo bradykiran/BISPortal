@@ -15,8 +15,8 @@ var http = require('http');
 var fs = require('fs');
 var httpPost = require('http-post');
 var nodemailer = require('nodemailer');
-var knex = require('knex');
 var httpProxy = require('http-proxy');
+var browserify = require('http-proxy');
 
 
 // custom libraries
@@ -73,7 +73,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(session( 
     {
-        secret: 'all is well', 
+        secret: prop.sessionSecret, 
         rolling: true , 
         resave: true,
         saveUninitialized : true,
@@ -85,92 +85,107 @@ app.use(passport.session());
 app.use(express.static(__dirname + '/views'));
 
 
+
+
+
 /********************************/
 
-//index
-// GET
-app.get('/', route.index);
+if (prop.maintenanceStat) {
+    //maintenance
+    // GET
+    app.get('/*', route.maintenance);
+} else {
+    //index
+    // GET
+    app.get('/', route.index);
+    
+    //Contact
+    //Post
+    app.post('/contact', route.contact);
 
-//home
-// GET
-app.get('/home', route.home);
+    
+    //home
+    // GET
+    app.get('/home', route.home);
+    
+    // login
+    // GET
+    app.get('/login', route.login);
+    // POST
+    app.post('/login', route.loginPost);
+    
+    // logout
+    // GET
+    app.get('/signout', route.signOut);
+    
+    //skyspark logout
+    app.get('/auth/logout', route.skySignOut);
+    app.get('/auth/demo/login', route.skySignOut);
+    
+    //skyspark project, get login info
+    //GET
+    app.get('/project/:id', route.project);
+    
+    
+    //proxy skyspark
+    //GET 
+    app.get('/proj/*', route.skyspark);
+    app.get('/pod/*', route.skyspark);
+    app.get('/util/*', route.skyspark);
+    app.get('/branding/*', route.skyspark);
+    app.get('/doc/*', route.skyspark);
+    //post
+    app.post('/api/*', route.skyspark);
+    
+    
+    // email password
+    // GET
+    app.get('/email', route.email);
+    // POST
+    app.post('/email', route.emailPost);
+    
+    
+    //admin 
+    //GET
+    app.get('/admin', route.admin);    
+    
+    // add user
+    // POST
+    app.post('/adduser', route.addUser);
+    
+    // remove user
+    // POST
+    app.post('/removeuser', route.removeUser);
+    
+    // add project
+    // POST
+    app.post('/addproject', route.addProject);
+    
+    // remove project
+    // POST
+    app.post('/removeproject', route.removeProject);
+    
+    // assign user project
+    // POST
+    app.post('/assignuserproject', route.assignUserProject);
+    
+    // unassign user project
+    // POST
+    app.post('/unassignuserproject', route.unassignUserProject);
+    
+    
+    
+    // change password
+    // GET
+    app.get('/changePwd', route.changePwd);
+    // POST
+    app.post('/changePwd', route.changePwdPost);
+    
+    
+    // 404 not found
+    app.use(route.notFound404);
 
-// login
-// GET
-app.get('/login', route.login);
-// POST
-app.post('/login', route.loginPost);
-
-// logout
-// GET
-app.get('/signout', route.signOut);
-app.get('/auth/logout', route.signOut);
-
-
-//skyspark project, get login info
-//GET
-app.get('/project/:id', route.project);
-
-
-//proxy skyspark
-//GET 
-app.get('/proj/*', route.skyspark);
-app.get('/pod/*', route.skyspark);
-app.get('/util/*', route.skyspark);
-app.get('/branding/*', route.skyspark);
-app.get('/doc/*', route.skyspark);
-//post
-app.post('/api/*', route.skyspark);
-
-
-// email password
-// GET
-app.get('/email', route.email);
-// POST
-app.post('/email', route.emailPost);
-
-
-//admin 
-//GET
-app.get('/admin', route.admin);
-
-// add user
-// POST
-app.post('/adduser', route.addUser);
-
-// remove user
-// POST
-app.post('/removeuser', route.removeUser);
-
-// add project
-// POST
-app.post('/addproject', route.addProject);
-
-// remove project
-// POST
-app.post('/removeproject', route.removeProject);
-
-// assign user project
-// POST
-app.post('/assignuserproject', route.assignUserProject);
-
-// unassign user project
-// POST
-app.post('/unassignuserproject', route.unassignUserProject);
-
-
-
-// change password
-// GET
-app.get('/changePwd', route.changePwd);
-// POST
-app.post('/changePwd', route.changePwdPost);
-
-
-// 404 not found
-app.use(route.notFound404);
-
-
+}
 
 /********************************/
 
