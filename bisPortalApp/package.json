@@ -1,0 +1,27 @@
+{
+   "name": "BISPortal",
+   "description": "Brady Intelligent services Portal",
+   "version": "1.0.0",
+   "author": "",
+   "main": "app.js",
+   "dependencies": {
+      "express": "*",
+      "body-parser": "*",
+      "cookie-parser": "*",
+      "express-session": "*",
+      "bcrypt-nodejs": "*",
+      "ejs": "*",
+      "passport": "*",
+      "passport-local": "*",
+    "mysql": "*",
+    "knex": "*",
+    "bookshelf": "*",
+    "request": "*",
+    "fs": "*",
+    "http-post": "*",
+    "nodemailer": "*",
+    "http-proxy": "*",
+    "express-http-proxy": "*"
+    
+   }
+}
